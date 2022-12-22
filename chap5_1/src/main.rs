@@ -1,23 +1,5 @@
-use core::f32::consts::PI;
+use helpers::{SAMPLING_RATE, create_sine_wave};
 use plotters::prelude::*;
-
-const SAMPLING_RATE: usize = 48000;
-
-fn create_sine_wave(freq: f32, gain: f32, length: usize) -> Vec<f32> {
-    let size = length * SAMPLING_RATE;
-    let mut data = Vec::new();
-
-    for t in 0..size {
-        data.push(gain * f32::sin(t as f32 * freq * 2.0 * PI / 48000.0));
-    }
-
-    for t in 0..SAMPLING_RATE as usize / 100 {
-        data[t] *= t as f32 / (SAMPLING_RATE as f32 * 0.01);
-        data[size - t - 1] *= t as f32 / (SAMPLING_RATE as f32 * 0.01);
-    }
-
-    data
-}
 
 fn write_bitmap(data: &[f32]) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("wave.png", (1280, 960)).into_drawing_area();
@@ -52,6 +34,7 @@ fn write_bitmap(data: &[f32]) -> Result<(), Box<dyn std::error::Error>> {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let wave = create_sine_wave(500.0, 0.5, 1);
+    write_bitmap(&wave)?;
 
-    write_bitmap(&wave)
+    Ok(())
 }
