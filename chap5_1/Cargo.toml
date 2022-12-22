@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 plotters = "0.3.4"
+rustfft = "6.1.0"
+helpers = { path = "../helpers" }

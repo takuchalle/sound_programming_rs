@@ -1,5 +1,6 @@
-use helpers::{SAMPLING_RATE, create_sine_wave};
+use helpers::{create_sine_wave, SAMPLING_RATE};
 use plotters::prelude::*;
+use rustfft::{num_complex::Complex, FftPlanner};
 
 fn write_bitmap(data: &[f32]) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("wave.png", (1280, 960)).into_drawing_area();
@@ -35,6 +36,23 @@ fn write_bitmap(data: &[f32]) -> Result<(), Box<dyn std::error::Error>> {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let wave = create_sine_wave(500.0, 0.5, 1);
     write_bitmap(&wave)?;
+
+    let mut planner = FftPlanner::<f32>::new();
+    let fft = planner.plan_fft_forward(SAMPLING_RATE);
+
+    let mut buffer: Vec<_> = wave.iter().map(|s| Complex { re: *s, im: 0.0 }).collect();
+
+    fft.process(&mut buffer);
+
+    let max_peak = buffer
+        .iter()
+        .take(SAMPLING_RATE / 2)
+        .enumerate()
+        .max_by_key(|&(_, freq)| freq.norm() as u32);
+    if let Some((i, _)) = max_peak {
+        let bin = 48000f32 / SAMPLING_RATE as f32;
+        println!("{}", i as f32 * bin); 
+    }
 
     Ok(())
 }
