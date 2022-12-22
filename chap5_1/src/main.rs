@@ -1,5 +1,5 @@
-use plotters::prelude::*;
 use core::f32::consts::PI;
+use plotters::prelude::*;
 
 const SAMPLING_RATE: usize = 48000;
 
@@ -19,7 +19,6 @@ fn create_sine_wave(freq: f32, gain: f32, length: usize) -> Vec<f32> {
     data
 }
 
-
 fn write_bitmap(data: &[f32]) -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("wave.png", (1280, 960)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -28,13 +27,13 @@ fn write_bitmap(data: &[f32]) -> Result<(), Box<dyn std::error::Error>> {
         .margin(5)
         .x_label_area_size(30)
         .y_label_area_size(30)
-        .build_cartesian_2d(0..SAMPLING_RATE/2, -1f32..1f32)?;
+        .build_cartesian_2d(0..SAMPLING_RATE / 2, -1f32..1f32)?;
 
     chart.configure_mesh().draw()?;
 
     chart
         .draw_series(LineSeries::new(
-                data.iter().enumerate().map(|(i, x)| (i,*x)),
+            data.iter().enumerate().map(|(i, x)| (i, *x)),
             &RED,
         ))?
         .label("y = x^2")
@@ -49,7 +48,6 @@ fn write_bitmap(data: &[f32]) -> Result<(), Box<dyn std::error::Error>> {
     root.present()?;
 
     Ok(())
-
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
